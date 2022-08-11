@@ -55,7 +55,7 @@ app.get("/login", function(req, res) {
 
 app.post("/login", function(req, res) {
     const curUsr = req.body.username;
-    const curpas = req.body.password;
+    const curpas = md5(req.body.password);
     Userlist.findOne({ email: curUsr }, function(err, found) {
         if (err) {
             console.log(err);

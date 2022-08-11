@@ -42,19 +42,20 @@ app.get("/register", function(req, res) {
 app.post("/register", function(req, res) {
     const usern = req.body.username;
 
-    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-        const nwUsr = new Userlist({
-            email: usern,
-            password: hash
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) //requiring password 
+        {
+            const nwUsr = new Userlist({
+                email: usern,
+                password: hash
+            });
+            nwUsr.save(function(err) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.render("secrets");
+                }
+            });
         });
-        nwUsr.save(function(err) {
-            if (err) {
-                res.send(err);
-            } else {
-                res.render("secrets");
-            }
-        });
-    });
 
 });
 

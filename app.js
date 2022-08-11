@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -39,7 +41,19 @@ const User = new mongoose.model("User", userSchema);
 passport.use(User.createStrategy());
 
 passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.deserializeUser(User.deserializeUser()); //use google api services here
+
+passport.use(new GoogleStrategy({
+        clientID: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        callbackURL: "https://localhost:3000/auth/google/secrets"
+    },
+    function(accessToken, refreshToken, profile, cb) {
+        User.findOrCreate({ googleId: profile.id }, function(err, user) {
+            return cb(err, user);
+        });
+    }
+));
 
 app.get("/", function(req, res) {
     res.render("home");
@@ -108,3 +122,5 @@ app.listen(3000, function() {
 
 
 //validation failed it should have only username and password
+//5233795642-vpp3upbe6hqumvot4q8cbv9aseafnvot.apps.googleusercontent.com
+//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
